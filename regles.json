@@ -1,0 +1,283 @@
+{
+  "meta": {
+    "titre": "Moteur de règles — Subsides communaux de la Ville de Binche",
+    "version": "1.0",
+    "sources": [
+      "Règlement général fixant les conditions d'octroi d'un subside communal, CC 12/10/2009 pt 19",
+      "Règlements spécifiques, CC 12/10/2009 pts 22 à 34",
+      "Modification sociétés patriotiques, CC 20/12/2016 pt 20",
+      "Modification sociétés carnavalesques, CC 19/02/2019 pt 12",
+      "Modification kermesses communales, CC 19/02/2019 pt 13"
+    ],
+    "avertissement": "Simulation indicative. Seule la décision du Conseil communal fait foi. L'octroi reste subordonné à la disponibilité des crédits budgétaires (art. 3 du règlement général) ; en cas d'insuffisance de crédit, les montants sont répartis proportionnellement entre bénéficiaires.",
+    "devise": "EUR"
+  },
+
+  "conditions_generales": {
+    "ref": "Règlement général, CC 12/10/2009 pt 19",
+    "eligibilite": [
+      { "id": "agreation", "texte": "Être agréée par le Conseil communal (demande écrite à la Ville, formulaire de candidature)", "articles": ["art. 1", "art. 2"] },
+      { "id": "interet_general", "texte": "Mener des activités à caractère d'intérêt général, originales et en adéquation avec la politique générale de la ville", "articles": ["art. 3"] },
+      { "id": "siege", "texte": "Avoir son siège social ou local dans l'entité, OU contribuer à l'intérêt général local et au développement de la population binchoise", "articles": ["art. 3"] },
+      { "id": "ouverture", "texte": "Activités ouvertes à tous, sans discrimination et dans le respect des valeurs démocratiques", "articles": ["art. 3"] },
+      { "id": "anciennete", "texte": "Compter au moins un an d'existence et d'activité effective", "articles": ["art. 3"] },
+      { "id": "compte_bancaire", "texte": "Posséder un compte bancaire propre", "articles": ["art. 3"] }
+    ],
+    "obligations": [
+      { "id": "demande_annuelle", "texte": "Introduire chaque année sa demande via le formulaire officiel (3 exemplaires), avec annexe des activités passées et du programme à venir", "articles": ["art. 7", "art. 8"] },
+      { "id": "delai_30j", "texte": "Rentrer le formulaire dans les 30 jours de son envoi, sous peine de perdre la qualité d'association reconnue", "articles": ["art. 18"] },
+      { "id": "justification_90j", "texte": "Justifier l'utilisation du subside dans les 90 jours du versement (pièces justificatives classées) ; délai prolongé au 31 mars de l'année suivante pour les associations avec personnalité juridique", "articles": ["art. 15", "art. 16"] },
+      { "id": "mention", "texte": "Faire figurer « AVEC LE SOUTIEN DE LA VILLE DE BINCHE » sur les documents promotionnels", "articles": ["art. 14"] },
+      { "id": "usage_conforme", "texte": "Utiliser le subside aux fins pour lesquelles il a été octroyé ; restitution en cas d'usage non conforme, de défaut de justification ou d'opposition au contrôle", "articles": ["art. 13", "art. 20"] }
+    ],
+    "seuils_comptables": [
+      { "plage": [0, 1239.47], "obligation": "Exonération de l'obligation de fournir comptes, bilan ou budget", "articles": ["art. 10"] },
+      { "plage": [1239.47, 24789.35], "obligation": "Documents comptables et financiers requis si un membre du Conseil communal siège au comité directeur ou au CA", "articles": ["art. 11"] },
+      { "plage": [24789.35, null], "obligation": "Personnalité juridique obligatoire ; statuts et PV d'installation du CA à la première demande ; bilan, comptes et PV d'AG chaque année", "articles": ["art. 12"] }
+    ],
+    "tutelle": { "seuil": 2500, "texte": "Dossiers en numéraire supérieurs à 2.500 € (montant indexé, base indice santé janvier 2008) soumis à la tutelle générale d'annulation", "articles": ["art. 9", "CDLD L3122-2-5°"] },
+    "types_aide": {
+      "especes": "Subside versé en espèces",
+      "nature": "Mise à disposition de personnel, d'infrastructures (charges comprises), prestations d'entretien et de logistique, prêt de tentes et podiums — valorisées selon tarifs approuvés par le Conseil communal (art. 4)",
+      "aides_negligeables": "Coupes, médailles, cadeaux de représentation, drink-collation lors d'un événement exceptionnel, mise à disposition occasionnelle de matériel (chaises, tables, sono, impressions...), barrières Nadar : non assimilées à un subside (art. 4)"
+    }
+  },
+
+  "categories": [
+    {
+      "id": "culturelles",
+      "label": "Associations culturelles locales",
+      "ref": "CC 12/10/2009 pt 24",
+      "imputation": "762/332 05/02",
+      "definition": "Toute association visant la promotion des arts, de la connaissance et des travaux de l'esprit (art. 2).",
+      "questions": [
+        { "id": "personnalite_juridique", "type": "bool", "libelle": "L'association dispose-t-elle de la personnalité juridique (ASBL) ?" },
+        { "id": "proprietaire", "type": "bool", "libelle": "L'association est-elle propriétaire de ses installations et en assure-t-elle le fonctionnement et l'entretien de ses deniers ?" }
+      ],
+      "calcul": {
+        "type": "bareme_exclusif",
+        "regles": [
+          { "si": { "proprietaire": true }, "montant": 4500, "libelle": "Association propriétaire de ses installations", "article": "art. 7" },
+          { "si": { "personnalite_juridique": true }, "montant": 400, "libelle": "Activités permanentes avec personnalité juridique", "article": "art. 6" },
+          { "si": {}, "montant": 200, "libelle": "Activités permanentes sans personnalité juridique", "article": "art. 5" }
+        ]
+      },
+      "ponctuel": { "possible": true, "max_pct_budget": 50, "plafond": 1600, "cumul_interdit_meme_exercice": true, "decision": "Conseil communal sur proposition du Collège", "articles": ["art. 8", "art. 9"] }
+    },
+    {
+      "id": "sportives",
+      "label": "Associations sportives locales",
+      "ref": "CC 12/10/2009 pt 25",
+      "imputation": "764/332 01-02",
+      "definition": "Toute association obligatoirement affiliée à une fédération ou un mouvement officiels (art. 2).",
+      "questions": [
+        { "id": "nb_membres", "type": "number", "libelle": "Nombre de membres" },
+        { "id": "act_adultes_regional", "type": "number", "max": 2, "libelle": "Activités hors championnat pour adultes, à caractère régional (max 2 prises en compte)" },
+        { "id": "act_adultes_national", "type": "number", "max": 1, "libelle": "Activités hors championnat pour adultes, à caractère national ou international (max 1)" },
+        { "id": "act_jeunesse_regional", "type": "number", "max": 2, "libelle": "Activités de promotion sportive de la jeunesse, à caractère régional (max 2)" },
+        { "id": "act_jeunesse_national", "type": "number", "max": 1, "libelle": "Activités de promotion sportive de la jeunesse, à caractère national ou international (max 1)" },
+        { "id": "nb_equipes_championnat", "type": "number", "libelle": "Nombre d'équipes participant à un championnat" },
+        { "id": "discipline", "type": "enum", "valeurs": ["basket", "football_amateur", "football_corporatif", "football_urbsfa", "mini_foot", "marche", "tennis_de_table", "autre"], "libelle": "Discipline principale" },
+        { "id": "infra_privee_sans_aide", "type": "bool", "libelle": "Le club utilise-t-il des infrastructures privées sans participation de la Ville dans les frais de location ? (football URBSFA / tennis de table)" }
+      ],
+      "calcul": {
+        "type": "cumulatif",
+        "composantes": [
+          { "id": "base_membres", "regles": [
+            { "si": { "nb_membres": { "min": 1, "max": 200 } }, "montant": 65, "libelle": "Subside de base, 1 à 200 membres", "article": "art. 5.1" },
+            { "si": { "nb_membres": { "min": 201 } }, "montant": 50, "libelle": "Subside de base, plus de 200 membres", "article": "art. 5.1" }
+          ]},
+          { "id": "activites", "formule": "act_adultes_regional*65 + act_adultes_national*130 + act_jeunesse_regional*100 + act_jeunesse_national*165", "plafonds_inclus": "les max par type de question s'appliquent", "article": "art. 5.2" },
+          { "id": "equipes", "formule": "si nb_equipes_championnat >= 1 : 75 + (nb_equipes_championnat - 1) * 50", "article": "art. 5.3" },
+          { "id": "supplement_discipline", "regles": [
+            { "si": { "discipline": "basket" }, "montant": 250, "article": "art. 6.1" },
+            { "si": { "discipline": "football_amateur" }, "montant": 150, "article": "art. 6.2" },
+            { "si": { "discipline": "football_corporatif" }, "montant": 75, "article": "art. 6.3" },
+            { "si": { "discipline": "football_urbsfa" }, "montant": 500, "article": "art. 6.4.a" },
+            { "si": { "discipline": "football_urbsfa", "infra_privee_sans_aide": true }, "montant": 1100, "libelle": "Clubs URBSFA en infrastructures privées sans participation communale (exclus : clubs en infrastructures communales)", "article": "art. 6.4.b" },
+            { "si": { "discipline": "tennis_de_table", "infra_privee_sans_aide": true }, "montant": 300, "libelle": "Clubs de tennis de table sans aide de la Ville pour la location de bâtiment", "article": "art. 6.7" }
+          ]},
+          { "id": "nominatifs_sport", "regles": [
+            { "si": { "discipline": "football_urbsfa" }, "montant": 1500, "libelle": "Subside exceptionnel attribué alternativement chaque année à un seul club URBSFA local, selon un cycle (RFC Ressaix, RUSC Binche, AFC Péronnes, JS Bray, AJS Buvrinnes, RSC Leval, puis recommencement)", "condition_texte": "uniquement l'année où le club est désigné dans le cycle", "article": "art. 6.4.c" },
+            { "si": { "discipline": "mini_foot" }, "montant": 125, "libelle": "Club de mini-foot organisateur du tournoi de l'entité de l'année", "article": "art. 6.5" },
+            { "si": { "discipline": "marche" }, "montants_nominatifs": [
+              { "beneficiaire": "Club organisateur de la Marche Saint-Étienne", "montant": 125 },
+              { "beneficiaire": "Marcheurs de la Police de Binche", "montant": 250 },
+              { "beneficiaire": "Les Tatanes Ailées", "montant": 250 },
+              { "beneficiaire": "Comité organisateur du Grand Prix Robert Schoukens", "montant": 400 },
+              { "beneficiaire": "Binche Sports pour la Corrida des Remparts", "montant": 400 }
+            ], "article": "art. 6.6" }
+          ]},
+          { "id": "autres_disciplines", "texte": "Pour toute discipline non listée, le Conseil communal peut fixer un subside sur proposition du Collège, intégré au règlement pour les années suivantes", "article": "art. 6.8" }
+        ]
+      },
+      "elite": { "texte": "Tout club accédant à l'élite de sa discipline (division la plus haute) peut recevoir l'année de son accession un subside exceptionnel, dans la limite des crédits ; montant fixé par le Conseil communal", "article": "art. 6 (élite)" },
+      "ponctuel": { "possible": true, "max_pct_budget": 50, "plafond": 2400, "cumul_interdit_meme_exercice": true, "decision": "Conseil communal sur proposition du Collège", "article": "art. 7" }
+    },
+    {
+      "id": "jeunesse",
+      "label": "Organisations de jeunesse",
+      "ref": "CC 12/10/2009 pt 23",
+      "imputation": "761/332 03/02",
+      "definition": "Mouvements de jeunesse organisant régulièrement des activités en faveur des enfants et adolescents de l'entité.",
+      "questions": [
+        { "id": "activites_regulieres", "type": "bool", "libelle": "Le mouvement organise-t-il régulièrement des activités pour les enfants et adolescents de l'entité ?" },
+        { "id": "camps", "type": "liste", "libelle": "Camps de vacances organisés (lieu, dates, nombre de participants de 6 à 18 ans hors encadrement)", "item": { "duree_jours": "number", "participants_6_18": "number" } }
+      ],
+      "calcul": {
+        "type": "cumulatif",
+        "composantes": [
+          { "id": "base", "regles": [ { "si": { "activites_regulieres": true }, "montant": 186, "article": "art. 3" } ] },
+          { "id": "camps", "par_item": true, "conditions_item": { "duree_jours": { "min": 10 } }, "regles": [
+            { "si": { "participants_6_18": { "min": 15, "max": 25 } }, "montant": 250, "article": "art. 6" },
+            { "si": { "participants_6_18": { "min": 26, "max": 50 } }, "montant": 375, "article": "art. 6" },
+            { "si": { "participants_6_18": { "min": 51 } }, "montant": 500, "article": "art. 6" }
+          ], "justificatifs": "Contrats de location du camp + déclaration sur l'honneur du nombre de participants (art. 5 et formulaire annexe)", "articles": ["art. 4", "art. 5", "art. 6"] }
+        ]
+      }
+    },
+    {
+      "id": "aines",
+      "label": "Associations de personnes âgées",
+      "ref": "CC 12/10/2009 pt 31",
+      "imputation": "834/332 01-02",
+      "calcul": { "type": "forfait", "montant": 155, "article": "art. 3" }
+    },
+    {
+      "id": "horticoles",
+      "label": "Cercles horticoles et petit élevage",
+      "ref": "CC 12/10/2009 pt 32",
+      "imputation": "622/332-02",
+      "definition": "Sociétés organisant des conférences ou diffusant des informations favorisant le jardinage, l'embellissement du cadre de vie par les plantes et le petit élevage (art. 2).",
+      "calcul": { "type": "forfait", "montant": 155, "article": "art. 4" }
+    },
+    {
+      "id": "photo_cine",
+      "label": "Clubs de photos, ciné, vidéos",
+      "ref": "CC 12/10/2009 pt 27",
+      "imputation": "762/332 06-02",
+      "calcul": { "type": "forfait", "montant": 125, "article": "art. 3" }
+    },
+    {
+      "id": "handicap",
+      "label": "Œuvres d'aide aux handicapés",
+      "ref": "CC 12/10/2009 pt 33",
+      "imputation": "823/332-02",
+      "calcul": { "type": "forfait", "montant": 125, "article": "art. 3" }
+    },
+    {
+      "id": "ornithologiques",
+      "label": "Sociétés ornithologiques",
+      "ref": "CC 12/10/2009 pt 28",
+      "imputation": "762/332 07-02",
+      "calcul": { "type": "forfait", "montant": 125, "article": "art. 3" }
+    },
+    {
+      "id": "one",
+      "label": "Sections locales de l'ONE",
+      "ref": "CC 12/10/2009 pt 30",
+      "imputation": "871/332-02",
+      "questions": [ { "id": "enfants_par_an", "type": "number", "libelle": "Nombre d'enfants accueillis par an" } ],
+      "calcul": {
+        "type": "bareme_exclusif",
+        "regles": [
+          { "si": { "enfants_par_an": { "max": 249 } }, "montant": 186, "libelle": "Moins de 250 enfants par an", "article": "art. 3" },
+          { "si": { "enfants_par_an": { "min": 250 } }, "montant": 297, "libelle": "Plus de 250 enfants par an", "article": "art. 3" }
+        ]
+      }
+    },
+    {
+      "id": "musicales",
+      "label": "Sociétés musicales et chorales",
+      "ref": "CC 12/10/2009 pt 26",
+      "imputation": "762/332 03-02",
+      "questions": [
+        { "id": "type_ensemble", "type": "enum", "valeurs": ["societe_musicale", "chorale"], "libelle": "Type d'ensemble" },
+        { "id": "effectif", "type": "number", "libelle": "Nombre de musiciens / participants" }
+      ],
+      "calcul": {
+        "type": "bareme_exclusif",
+        "regles": [
+          { "si": { "type_ensemble": "societe_musicale", "effectif": { "min": 20 } }, "montant": 1050, "libelle": "Société musicale d'au moins 20 musiciens (art. 3)", "article": "art. 5" },
+          { "si": { "type_ensemble": "chorale", "effectif": { "min": 20 } }, "montant": 650, "libelle": "Chorale d'au moins 20 participants (art. 4)", "article": "art. 5" }
+        ],
+        "inegilibilite_si": "effectif < 20"
+      }
+    },
+    {
+      "id": "patriotiques",
+      "label": "Sociétés patriotiques",
+      "ref": "CC 12/10/2009 pt 29, modifié CC 20/12/2016 pt 20",
+      "imputation": "763/332 02-02 (763/33202-02 au budget 2016)",
+      "questions": [
+        { "id": "cas_particulier", "type": "enum", "valeurs": ["standard", "fusionne_ressaix_peronnes", "fraternelle_b40"], "libelle": "Situation du groupement" }
+      ],
+      "calcul": {
+        "type": "bareme_exclusif",
+        "regles": [
+          { "si": { "cas_particulier": "fraternelle_b40" }, "montant": 450, "libelle": "Fraternelle Armée secrète B 40 de Binche (seule association organisant les commémorations du centre-ville)", "article": "art. 3, mod. 2016" },
+          { "si": { "cas_particulier": "fusionne_ressaix_peronnes" }, "montant": 250, "libelle": "Groupements fusionnés F.N.A.P.G. et F.N.A.C. de Ressaix/Péronnes", "article": "art. 3" },
+          { "si": {}, "montant": 125, "libelle": "Groupement patriotique standard", "article": "art. 3" }
+        ]
+      }
+    },
+    {
+      "id": "kermesses",
+      "label": "Comités organisateurs de kermesses communales",
+      "ref": "CC 12/10/2009 pt 22, modifié CC 19/02/2019 pt 13",
+      "imputation": "763/332 05/02 (763/33205-02 au budget 2019)",
+      "conditions_specifiques": [
+        "Adhésion OBLIGATOIRE d'un membre du Collège communal au comité, en qualité d'observateur sans voix délibérative (art. 3)",
+        "Aucune rétrocession du subside, en tout ou partie (art. 5)"
+      ],
+      "questions": [ { "id": "jours_festivites", "type": "number", "libelle": "Nombre de jours de festivités" } ],
+      "calcul": {
+        "type": "bareme_exclusif",
+        "regles": [
+          { "si": { "jours_festivites": 1 }, "montant": 375, "article": "art. 4, mod. 2019" },
+          { "si": { "jours_festivites": 2 }, "montant": 750, "article": "art. 4, mod. 2019" },
+          { "si": { "jours_festivites": { "min": 3 } }, "montant": 2000, "article": "art. 4, mod. 2019" }
+        ]
+      }
+    },
+    {
+      "id": "carnavalesques",
+      "label": "Sociétés carnavalesques",
+      "ref": "CC 12/10/2009 pt 34, modifié CC 19/02/2019 pt 12",
+      "imputation": "763/332 01-02 (763/33201-02 au budget 2019)",
+      "questions": [
+        { "id": "zone", "type": "enum", "valeurs": ["binche", "entite"], "libelle": "La société sort-elle à Binche-centre ou dans l'entité ?" },
+        { "id": "type_societe", "type": "enum", "valeurs_binche": ["gilles_ou_fantaisie", "fantaisie_jeunesse", "petits_gilles", "jeune_garde_ou_jeunesse_trad", "adf", "lundi_gras", "trouilles_de_nouilles"], "valeurs_entite": ["gilles", "fantaisie", "groupe_costume_precarnavalesque"], "libelle": "Type de société" },
+        { "id": "sortie_mardi_gras_matin", "type": "bool", "libelle": "Paysans (musique) ou Pierrots (viole) : sortie le mardi gras au matin ?" },
+        { "id": "jours_sortie_precarnaval", "type": "number", "libelle": "Entité : nombre de jours de sortie en période précarnavalesque (groupes costumés avec batterie, musique ou viole)" }
+      ],
+      "calcul": {
+        "type": "bareme_2019",
+        "binche": [
+          { "si": { "type_societe": "gilles_ou_fantaisie" }, "montant": 1250, "libelle": "Sociétés de gilles et de fantaisie" },
+          { "si": { "type_societe": "fantaisie_jeunesse" }, "montant": 1850, "libelle": "Sociétés de fantaisie « jeunesse » (Paysans, Pierrots, Arlequins)" },
+          { "si": { "type_societe": "fantaisie_jeunesse", "sortie_mardi_gras_matin": true }, "montant_supplement": 600, "libelle": "Supplément Paysans (musique) / Pierrots (viole), sortie du mardi gras au matin" },
+          { "si": { "type_societe": "petits_gilles" }, "montant": 3000, "libelle": "Petits Gilles" },
+          { "si": { "type_societe": "jeune_garde_ou_jeunesse_trad" }, "montant": 1800, "libelle": "Jeune Garde libérale, Royale Jeunesse catholique, Jeunesse socialiste : 900 € (bal de carnaval) + 900 € (sortie du lundi-gras)", "decomposition": [900, 900] },
+          { "si": { "type_societe": "adf" }, "montant": 1250, "libelle": "Association de Défense du Folklore" },
+          { "si": { "type_societe": "lundi_gras" }, "montant": 1950, "libelle": "Association du Lundi-gras : 1.250 € + 700 € (bal d'enfants)", "decomposition": [1250, 700] },
+          { "si": { "type_societe": "trouilles_de_nouilles" }, "montant": 325, "libelle": "Association organisatrice des Trouilles de Nouilles" }
+        ],
+        "entite": [
+          { "si": { "type_societe": "gilles" }, "montant": 1250, "libelle": "Sociétés de gilles" },
+          { "si": { "type_societe": "fantaisie" }, "montant": 1000, "libelle": "Sociétés de fantaisie" },
+          { "si": { "type_societe": "groupe_costume_precarnavalesque" }, "formule": "jours_sortie_precarnaval * 100", "libelle": "Groupes costumés avec batterie, musique ou viole sortant en période précarnavalesque : 100 € par jour" }
+        ]
+      },
+      "note_historique": "Barème 2009 (pt 34) remplacé par le barème 2019 ; les anciens montants (1.141 €, 1.712 €, 2.579 €, etc.) ne sont conservés qu'à titre historique."
+    },
+    {
+      "id": "nominatif",
+      "label": "Subsides nominatifs (hors barème)",
+      "ref": "Règlement général, art. 22",
+      "imputation": "variable selon l'objet",
+      "definition": "Subsides dont le montant est fixé nominativement par le Conseil communal dans le cadre de l'arrêt du budget de l'exercice, pour les associations ne relevant d'aucun règlement spécifique.",
+      "calcul": { "type": "nominatif", "texte": "Pas de barème : montant décidé au budget. Le simulateur ne peut pas prédire ce montant ; il renvoie vers la comparaison avec les subsides nominatifs existants et vers le contact MR-CI." }
+    }
+  ]
+}

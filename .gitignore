@@ -1,0 +1,11 @@
+# OS / éditeurs
+Thumbs.db
+.DS_Store
+~$*
+*.tmp
+
+# Claude Code (paramètres locaux)
+.claude/settings.local.json
+
+# Node (si ajouté plus tard)
+node_modules/
