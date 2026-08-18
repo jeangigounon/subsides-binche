@@ -8,6 +8,10 @@
   /* Configuration                                                        */
   /* ------------------------------------------------------------------ */
   var CONTACT_EMAIL = 'mr-ci.binche@gmail.com';
+  // Envoi direct du formulaire de contact via Web3Forms (https://web3forms.com).
+  // Coller ici l'access key reçue par e-mail à CONTACT_EMAIL. Si vide, repli sur mailto:.
+  var FORM_ACCESS_KEY = '';
+  var FORM_ENDPOINT = 'https://api.web3forms.com/submit';
   var SHOW_CERT = false; // afficher le niveau de certitude de la catégorisation
 
   var ROUTES = { home: '', sim: 'simulateur', explore: 'qui-recoit-quoi', prop: 'proposition', contact: 'contact' };
@@ -43,7 +47,7 @@
   var st = {
     screen: 'home', simStep: 1, simCat: null, answers: {}, cgOpen: false, assoName: '', nameError: false,
     query: '', catFilter: 'all', sortKey: 't', expanded: null,
-    cNom: '', cPrenom: '', cEmail: '', cTel: '', cMsg: '', cErr: '', simContext: false,
+    cNom: '', cPrenom: '', cEmail: '', cTel: '', cMsg: '', cErr: '', simContext: false, cSending: false, cSent: false, cHoney: '',
     toastReady: false, toastDismissed: false
   };
   var S, DATA, eur;
@@ -420,15 +424,50 @@
       return '<div><label for="' + id + '" style="font-size:13px;font-weight:700;display:block;margin-bottom:4px">' + label + ' ' + (required ? '<span style="color:#c22a1e">*</span>' : '<span style="color:#8a90b8;font-weight:500">(optionnel)</span>') + '</label>' +
         '<input id="' + id + '" type="' + type + '" ' + (extra || '') + ' value="' + esc(st[key]) + '" data-input="' + on(function (e) { st[key] = e.target.value; }) + '" style="width:100%;border:1px solid #c6cde8;border-radius:6px;padding:11px 12px;font-size:15px"></div>';
     };
+    var subject = function () { return st.assoName && st.simContext ? 'Subsides Binche — dossier ' + st.assoName : 'Subsides de Binche — contact'; };
+    var mailtoHref = function () {
+      var body = st.cMsg + '\n—\n' + st.cPrenom + ' ' + st.cNom + '\n' + st.cEmail + (st.cTel ? '\n' + st.cTel : '');
+      return 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent(subject()) + '&body=' + encodeURIComponent(body);
+    };
     var submit = function () {
+      if (st.cSending) return;
       if (!st.cNom.trim() || !st.cPrenom.trim() || !st.cEmail.trim()) { set({ cErr: 'Nom, prénom et adresse e-mail sont obligatoires.' }); return; }
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.cEmail.trim())) { set({ cErr: "L'adresse e-mail ne semble pas valide." }); return; }
-      st.cErr = '';
-      var body = st.cMsg + '\n—\n' + st.cPrenom + ' ' + st.cNom + '\n' + st.cEmail + (st.cTel ? '\n' + st.cTel : '');
-      var subject = st.assoName && st.simContext ? 'Subsides Binche — dossier ' + st.assoName : 'Subsides de Binche — contact';
-      window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-      render();
+      if (st.cHoney) { set({ cSent: true }); return; } // robot : on fait semblant
+      if (!FORM_ACCESS_KEY || !window.fetch) { st.cErr = ''; window.location.href = mailtoHref(); render(); return; }
+      set({ cErr: '', cSending: true });
+      var payload = {
+        access_key: FORM_ACCESS_KEY,
+        subject: subject(),
+        from_name: 'Subsides de Binche — formulaire de contact',
+        name: st.cPrenom.trim() + ' ' + st.cNom.trim(),
+        email: st.cEmail.trim(),
+        replyto: st.cEmail.trim(),
+        telephone: st.cTel.trim() || '(non communiqué)',
+        association: st.simContext && st.assoName ? st.assoName : '(hors simulation)',
+        message: st.cMsg,
+        botcheck: st.cHoney
+      };
+      fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) })
+        .then(function (r) { return r.json().catch(function () { return { success: r.ok }; }); })
+        .then(function (j) {
+          if (j && j.success) { set({ cSending: false, cSent: true, cErr: '' }); window.scrollTo(0, 0); }
+          else { set({ cSending: false, cErr: 'L\'envoi a échoué (' + esc((j && j.message) || 'erreur du service') + '). Réessayez ou utilisez le lien ci-dessous.' }); }
+        })
+        .catch(function () { set({ cSending: false, cErr: 'Impossible de joindre le service d\'envoi. Réessayez ou utilisez le lien ci-dessous.' }); });
     };
+    if (st.cSent) {
+      return '<div data-screen="Contact" style="max-width:640px;margin:0 auto;padding:30px 16px 56px">' +
+        '<div style="display:flex;align-items:center;gap:12px">' + tag(true) + h1('Message envoyé') + '</div>' +
+        '<div style="' + CARD + 'padding:22px;margin-top:16px;animation:rise .4s ease both">' +
+          '<div style="font:800 24px ' + FC + ';font-style:italic;text-transform:uppercase;color:#000F9F;line-height:1.1">Merci ' + esc(st.cPrenom.trim()) + '&nbsp;!</div>' +
+          '<p style="font-size:14.5px;color:#3a4170;line-height:1.55;margin:10px 0 0">Votre message a bien été transmis au groupe MR-CI. Nous vous répondons à <strong>' + esc(st.cEmail.trim()) + '</strong> sous quelques jours.</p>' +
+          '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px">' +
+            skewBtn(on(function () { go('home', { cSent: false, cMsg: '', cErr: '', simContext: false }); }), 'Retour à l\'accueil') +
+            '<button data-act="' + on(function () { go('explore', { cSent: false, cMsg: '', cErr: '', simContext: false }); }) + '" class="hov-light" style="transform:skewX(-10deg);background:#fff;color:#002eff;border:2px solid #002eff;border-radius:5px;padding:12px 18px;font:700 16px ' + FC + ';text-transform:uppercase;letter-spacing:.05em;cursor:pointer">Qui reçoit quoi&nbsp;?</button>' +
+          '</div>' +
+        '</div></div>';
+    }
     return '<div data-screen="Contact" style="max-width:640px;margin:0 auto;padding:30px 16px 56px">' +
       '<div style="display:flex;align-items:center;gap:12px">' + tag(true) + h1('Contacter le groupe MR-CI') + '</div>' +
       '<p style="font-size:14.5px;color:#4a5180;line-height:1.5;margin:10px 0 18px">Nous vérifions votre dossier et vous aidons à introduire la demande auprès de la Ville. Réponse sous quelques jours.</p>' +
@@ -445,9 +484,12 @@
           '<textarea id="c-msg" rows="9" data-input="' + on(function (e) { st.cMsg = e.target.value; }) + '" style="width:100%;border:1px solid #c6cde8;border-radius:6px;padding:11px 12px;font-size:14px;line-height:1.5;resize:vertical">' + esc(st.cMsg) + '</textarea>' +
           (st.simContext ? '<div style="font-size:12px;color:#6a71a0;margin-top:4px">Pré-rempli avec votre simulation — vous pouvez le modifier.</div>' : '') +
         '</div>' +
-        (st.cErr ? '<div role="alert" style="color:#c22a1e;font-size:13.5px;font-weight:600">' + esc(st.cErr) + '</div>' : '') +
-        '<button type="submit" class="hov-dark" style="transform:skewX(-10deg);background:#002eff;color:#fff;border:none;border-radius:5px;padding:13px 18px;font:700 17px ' + FC + ';text-transform:uppercase;letter-spacing:.06em;cursor:pointer">Envoyer au groupe MR-CI</button>' +
-        '<div style="font-size:12px;color:#8a90b8;line-height:1.5">L\'envoi ouvre votre application e-mail avec le message prêt à partir vers ' + CONTACT_EMAIL + '.</div>' +
+        '<div style="position:absolute;left:-9999px;top:-9999px" aria-hidden="true"><label for="c-site">Ne pas remplir</label><input id="c-site" type="text" name="botcheck" tabindex="-1" autocomplete="off" value="' + esc(st.cHoney) + '" data-input="' + on(function (e) { st.cHoney = e.target.value; }) + '"></div>' +
+        (st.cErr ? '<div role="alert" style="color:#c22a1e;font-size:13.5px;font-weight:600">' + st.cErr + '</div>' : '') +
+        '<button type="submit" class="hov-dark" ' + (st.cSending ? 'disabled aria-busy="true"' : '') + ' style="transform:skewX(-10deg);background:#002eff;color:#fff;border:none;border-radius:5px;padding:13px 18px;font:700 17px ' + FC + ';text-transform:uppercase;letter-spacing:.06em;cursor:pointer;' + (st.cSending ? 'opacity:.7;cursor:progress' : '') + '">' + (st.cSending ? 'Envoi en cours…' : 'Envoyer au groupe MR-CI') + '</button>' +
+        (FORM_ACCESS_KEY
+          ? '<div style="font-size:12px;color:#8a90b8;line-height:1.5">Votre message est envoyé directement au groupe MR-CI (' + CONTACT_EMAIL + '). ' + (st.cErr ? '<a href="' + esc(mailtoHref()) + '" style="color:#002eff">Ouvrir plutôt mon application e-mail</a>.' : 'Vos coordonnées ne servent qu\'à vous répondre.') + '</div>'
+          : '<div style="font-size:12px;color:#8a90b8;line-height:1.5">L\'envoi ouvre votre application e-mail avec le message prêt à partir vers ' + CONTACT_EMAIL + '.</div>') +
       '</form>' +
     '</div>';
   }
