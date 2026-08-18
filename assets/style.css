@@ -17,7 +17,7 @@ main{flex:1}
 
 /* Survols (équivalent des attributs style-hover du prototype) */
 .hov-lift{transition:transform .15s ease,box-shadow .15s ease}
-.hov-lift:hover{transform:skewX(-10deg) translateY(-3px)}
+.hov-lift:hover{transform:skewX(-10deg) translateY(-3px) !important}
 .hov-dark{transition:background .15s ease}
 .hov-dark:hover{background:#000F9F !important}
 .hov-light{transition:background .15s ease}
@@ -28,8 +28,8 @@ main{flex:1}
 .hov-row:hover{border-color:#002eff !important;transform:translateX(3px)}
 .hov-x:hover{color:#10143a !important}
 .nav-btn{transition:background .15s ease,color .15s ease}
-.nav-btn:hover{background:#dfe3f5}
-.nav-btn.on:hover{background:#0026e0}
+.nav-btn:hover{background:#dfe3f5 !important}
+.nav-btn.on:hover{background:#0026e0 !important}
 
 /* Chargement */
 .loading{padding:60px 16px;text-align:center;color:#6a71a0;font:700 16px 'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase}
