@@ -1,6 +1,6 @@
 # État du projet « Subsides Binche » — document de passation
 
-> Rédigé le 17 août 2026 pour transmettre le contexte à une autre IA / un autre agent
+> Rédigé le 17 août 2026, mis à jour le 18 août 2026, pour transmettre le contexte à une autre IA / un autre agent
 > chargé de définir les prochaines étapes. Tout ce qui est décrit ici est déjà fait,
 > versionné et poussé sur GitHub.
 
@@ -40,8 +40,8 @@ est de **repartir de zéro** en ne récupérant que les données `assets/data.js
 
 ## 3. Dépôt GitHub actif : `jeangigounon/subsides-binche`
 
-- URL : https://github.com/jeangigounon/subsides-binche (**privé** pour l'instant).
-- Créé le 17/08/2026, un seul commit « Version initiale ».
+- URL : https://github.com/jeangigounon/subsides-binche (**public** depuis le 18/08/2026).
+- **Site publié via GitHub Pages : https://jeangigounon.github.io/subsides-binche/** (branche `main`, racine).
 - Remote `origin` configuré localement.
 
 ### Arborescence
@@ -51,9 +51,19 @@ subsides binche/
 ├── README.md
 ├── ETAT-DU-PROJET.md          ← ce document
 ├── .gitignore
-├── regles.json                ← moteur de règles (cœur du projet), ~21 Ko
+├── index.html                 ← coquille du site (page unique)
+├── regles.json                ← moteur de règles JSON (v1.1, ~33 Ko)
 ├── assets/
-│   └── data.js                ← données récupérées de l'ancien site (46 Ko)
+│   ├── app.js                 ← application vanilla JS (rendu des 5 écrans, routage #/…)
+│   ├── style.css              ← CSS de base + classes de survol
+│   ├── sim-rules.js           ← moteur de calcul par catégorie (window.SIM), issu du design
+│   ├── data.js                ← données récupérées de l'ancien site (46 Ko)
+│   └── logo-mrci.png
+├── design/                    ← prototype Claude Design d'origine (référence, non exécutable seul)
+│   ├── Subsides Binche v2.dc.html  (design principal transposé)
+│   ├── Subsides Binche.dc.html     (v1)
+│   ├── support.js                  (runtime dc)
+│   └── README-claude-design.md
 └── règlements/                ← sources officielles (~4 Mo)
     ├── Règlement général fixant les conditions d'octroi d'un subside communal … .pdf
     ├── Règlement subside spécifique aux associations culturelles locales.pdf
@@ -77,7 +87,29 @@ subsides binche/
     └── Annexe - Fiche activités - Clubs sportifs.docx
 ```
 
-### 3.1 `regles.json` — moteur de règles (v1.0)
+### 3.0 Le site (`index.html`, `assets/app.js`)
+
+Transposition fidèle du prototype Claude Design « Subsides Binche v2 » (fourni par
+l'utilisateur le 18/08/2026 sous forme de zip) en site statique sans dépendance :
+HTML/CSS/JS vanilla, polices Google Fonts (Barlow / Barlow Condensed), rendu par
+`innerHTML` avec délégation d'événements, état en mémoire, routage par hash
+(`#/simulateur`, `#/qui-recoit-quoi`, `#/proposition`, `#/contact`).
+
+Écrans : **Accueil** (chiffres clés calculés depuis `SUBS_DATA`), **Tester mes droits**
+(3 étapes : nom + catégorie → questions dynamiques bool/number/enum/liste avec
+conditions `visible` → résultat détaillé, notes, conditions générales, avertissement,
+boutons « Comparer avec ma catégorie » et « Nous contacter » pré-rempli),
+**Qui reçoit quoi ?** (recherche insensible aux accents, filtre catégorie, tri, KPI,
+lignes dépliables), **Proposition MR-CI**, **Contact** (validation, envoi via `mailto:`
+vers `CONTACT_EMAIL` = mr-ci.binche@gmail.com, constante en tête de `app.js`).
+Toast « proposition MR-CI » après 20 s sur Accueil/Explorer (mémorisé en sessionStorage).
+
+Le calcul des montants est fait par `assets/sim-rules.js` (objet `window.SIM` :
+`cats[]` avec `questions[]` et `compute(answers)` → `{lines, notes, ineligible?,
+nominatif?}`), **pas** directement par `regles.json` (qui reste la source documentaire
+structurée). Testé dans Chrome : sportives 1 605 €, jeunesse 561 €, aucune erreur console.
+
+### 3.1 `regles.json` — moteur de règles (v1.1)
 
 Fichier JSON structuré, rédigé à partir des règlements PDF. Structure :
 
@@ -203,28 +235,29 @@ Les libellés de catégorie de `data.js` (« Organisation de jeunesse », « Per
    (compte `jeangigounon`). Récupération de `assets/data.js` de l'ancien dépôt.
    `git init`, création du dépôt privé `subsides-binche`, premier push. Rédaction de ce
    document.
+3. **18/08/2026** — L'utilisateur a produit un design complet avec Claude Design
+   (claude.ai/design) et l'a déposé en zip. `regles.json` mis à jour en v1.1 par une
+   autre IA. Transposition du design en site statique (`index.html`, `assets/app.js`,
+   `assets/style.css`), tests dans Chrome, push, passage du dépôt en public et
+   activation de GitHub Pages → site en ligne.
 
 ---
 
 ## 6. Ce qui reste à faire (état des lieux, sans ordre imposé)
 
-Rien n'a encore été construit côté application. Points ouverts :
+Le site est en ligne et fonctionnel. Points ouverts :
 
-- **Valider `regles.json`** contre les PDF (montants, conditions, articles) et le
-  compléter là où des questions manquent (ex. catégories `forfait` sans question :
-  faut-il quand même vérifier les conditions générales d'éligibilité ?).
-- **Choisir la stack** du simulateur (l'ancien site était en HTML/CSS/JS statique sans
-  build, hébergé sur GitHub Pages — cohérent avec un poste sans droits admin et sans
-  Node ; à confirmer).
-- **Écrire le moteur d'évaluation** (interpréter `calcul.type`, les `regles[]` avec
-  `si`, les `formule`, les plafonds `max`) + jeu de tests avec des cas réels tirés de
-  `SUBS_DATA` (comparer le montant simulé au montant réellement octroyé).
-- **Interface** : parcours question/réponse par catégorie, affichage du résultat avec
-  références aux articles, rappel des conditions générales et obligations, lien vers
-  les formulaires DOCX, disclaimer (`meta.avertissement`).
-- **Réutiliser `SUBS_DATA`** pour un volet « comparez-vous aux associations déjà
-  subsidiées » et pour le cas `nominatif`.
-- **Décider du devenir de l'ancien dépôt/site** et de la visibilité (public/privé) du
-  nouveau.
+- **Valider les barèmes** de `sim-rules.js` et de `regles.json` contre les PDF
+  (montants, conditions, articles) ; garder les deux fichiers cohérents (aujourd'hui
+  `sim-rules.js` est la vérité pour le calcul, `regles.json` la documentation).
+- **Jeu de tests** : comparer les montants simulés aux montants réels de `SUBS_DATA`
+  pour quelques associations connues.
+- **Contenu** : confirmer l'adresse de contact (`CONTACT_EMAIL`), les textes de la
+  proposition MR-CI, éventuellement lier les formulaires DOCX depuis le résultat.
+- **Ancien site** `jeangigounon.github.io/subsides/` : à rediriger vers le nouveau ou à
+  archiver.
+- **Améliorations possibles** : `SHOW_CERT` (afficher le niveau de certitude de la
+  catégorisation), page 404, partage social (image og:image), analytics respectueux,
+  vérification accessibilité mobile.
 - Éventuellement : mise à jour des barèmes (indexation ? nouvelles décisions du Conseil
   après 2019 ?) — à vérifier auprès de la Ville.
