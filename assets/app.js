@@ -463,8 +463,7 @@
           '<div style="font:800 24px ' + FC + ';font-style:italic;text-transform:uppercase;color:#000F9F;line-height:1.1">Merci ' + esc(st.cPrenom.trim()) + '&nbsp;!</div>' +
           '<p style="font-size:14.5px;color:#3a4170;line-height:1.55;margin:10px 0 0">Votre message a bien été transmis au groupe MR-CI. Nous vous répondons à <strong>' + esc(st.cEmail.trim()) + '</strong> sous quelques jours.</p>' +
           '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px">' +
-            skewBtn(on(function () { go('home', { cSent: false, cMsg: '', cErr: '', simContext: false }); }), 'Retour à l\'accueil') +
-            '<button data-act="' + on(function () { go('explore', { cSent: false, cMsg: '', cErr: '', simContext: false }); }) + '" class="hov-light" style="transform:skewX(-10deg);background:#fff;color:#002eff;border:2px solid #002eff;border-radius:5px;padding:12px 18px;font:700 16px ' + FC + ';text-transform:uppercase;letter-spacing:.05em;cursor:pointer">Qui reçoit quoi&nbsp;?</button>' +
+            skewBtn(on(function () { go('prop', { cSent: false, cMsg: '', cErr: '', simContext: false }); }), 'Découvrir la proposition du groupe MR-CI') +
           '</div>' +
         '</div></div>';
     }
