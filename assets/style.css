@@ -1,0 +1,39 @@
+/* Subsides de Binche — feuille de style de base (les styles de mise en page
+   sont portés en inline dans app.js pour rester fidèles au design). */
+*{box-sizing:border-box}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px) skewX(-6deg)}to{opacity:1;transform:skewX(-6deg)}}
+html{background:#f4f5fa}
+body{margin:0;background:#f4f5fa;color:#10143a;font-family:'Barlow',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#002eff}a:hover{color:#000F9F}
+input,button,select,textarea{font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid #002eff;outline-offset:1px}
+button:focus-visible{outline:2px solid #002eff;outline-offset:2px}
+::selection{background:#ffd35e;color:#10143a}
+#app{min-height:100vh;display:flex;flex-direction:column}
+main{flex:1}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+
+/* Survols (équivalent des attributs style-hover du prototype) */
+.hov-lift{transition:transform .15s ease,box-shadow .15s ease}
+.hov-lift:hover{transform:skewX(-10deg) translateY(-3px)}
+.hov-dark{transition:background .15s ease}
+.hov-dark:hover{background:#000F9F !important}
+.hov-light{transition:background .15s ease}
+.hov-light:hover{background:#eef1fc !important}
+.hov-card{transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.hov-card:hover{border-color:#002eff !important;box-shadow:0 4px 14px rgba(0,46,255,.12);transform:translateY(-2px)}
+.hov-row{transition:transform .15s ease,border-color .15s ease}
+.hov-row:hover{border-color:#002eff !important;transform:translateX(3px)}
+.hov-x:hover{color:#10143a !important}
+.nav-btn{transition:background .15s ease,color .15s ease}
+.nav-btn:hover{background:#dfe3f5}
+.nav-btn.on:hover{background:#0026e0}
+
+/* Chargement */
+.loading{padding:60px 16px;text-align:center;color:#6a71a0;font:700 16px 'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s !important;transition-duration:.001s !important}
+}

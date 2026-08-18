@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="data.js"></script>
+<script src="sim-rules.js"></script>
+<style>
+*{box-sizing:border-box}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+body{margin:0;background:#f3f5fb;color:#0d1130;font-family:'Public Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#002eff}a:hover{color:#000F9F}
+input,button,select,textarea{font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid #002eff;outline-offset:1px}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column">
+  <header style="background:#000F9F;color:#fff;position:sticky;top:0;z-index:20">
+    <div style="max-width:1040px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px;margin-right:auto;cursor:pointer" onClick="{{ goHome }}">
+        <img src="logo-mrci.png" alt="MR-CI" style="height:30px;display:block;flex-shrink:0">
+        <div style="font:700 16px 'Archivo',sans-serif;line-height:1.15">Subsides de Binche</div>
+      </div>
+      <nav style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ navItems }}" as="it" hint-placeholder-count="4">
+          <button onClick="{{ it.onClick }}" style="{{ it.style }}">{{ it.label }}</button>
+        </sc-for>
+      </nav>
+    </div>
+  </header>
+  <main style="flex:1">
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Accueil">
+      <section style="background:linear-gradient(175deg,#000F9F 0%,#0a1fb8 70%,#0026e0 100%);color:#fff">
+        <div style="max-width:1040px;margin:0 auto;padding:52px 16px 44px">
+          <div style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:5px 14px;font-size:12px;font-weight:600;letter-spacing:.06em">INITIATIVE DU GROUPE MR-CI · CONSEIL COMMUNAL DE BINCHE</div>
+          <h1 style="font:800 clamp(30px,6vw,48px) 'Archivo',sans-serif;line-height:1.08;margin:18px 0 12px;max-width:640px;text-wrap:pretty">Où vont les subsides communaux de Binche&nbsp;?</h1>
+          <p style="font-size:17px;line-height:1.55;color:#ccd4ff;max-width:600px;margin:0 0 30px">À Binche, 14 règlements différents encadrent les subsides aux associations. Difficile pour une association de savoir à quoi elle a droit — et difficile de vérifier que chaque subside respecte les règles. Ce site rend tout cela lisible.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;max-width:640px">
+            <button onClick="{{ goSim }}" style="text-align:left;background:#fff;color:#000F9F;border:none;border-radius:14px;padding:20px;cursor:pointer;display:flex;flex-direction:column;gap:6px" style-hover="transform:translateY(-2px)">
+              <span style="font:700 19px 'Archivo',sans-serif">Tester mes droits →</span>
+              <span style="font-size:13.5px;color:#3a4390;line-height:1.45">Estimez ce que votre association devrait recevoir selon le règlement, et faites-vous accompagner pour la demande.</span>
+            </button>
+            <button onClick="{{ goExplore }}" style="text-align:left;background:#002eff;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:14px;padding:20px;cursor:pointer;display:flex;flex-direction:column;gap:6px" style-hover="transform:translateY(-2px)">
+              <span style="font:700 19px 'Archivo',sans-serif">Qui reçoit quoi&nbsp;? →</span>
+              <span style="font-size:13.5px;color:#c5cfff;line-height:1.45">Les {{ nAssos }} associations subsidiées et leurs montants, en espèces et en nature. Comparez avec la vôtre.</span>
+            </button>
+          </div>
+        </div>
+      </section>
+      <section style="max-width:1040px;margin:0 auto;padding:28px 16px 8px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+          <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:16px 18px">
+            <div style="font:800 28px 'Archivo',sans-serif;color:#002eff">{{ nAssos }}</div>
+            <div style="font-size:13px;color:#4a5180;margin-top:2px">associations subsidiées</div>
+          </div>
+          <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:16px 18px">
+            <div style="font:800 28px 'Archivo',sans-serif;color:#002eff">{{ totalTxt }}</div>
+            <div style="font-size:13px;color:#4a5180;margin-top:2px">de soutien communal par an</div>
+          </div>
+          <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:16px 18px">
+            <div style="font:800 28px 'Archivo',sans-serif;color:#002eff">14</div>
+            <div style="font-size:13px;color:#4a5180;margin-top:2px">règlements distincts à unifier</div>
+          </div>
+          <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:16px 18px">
+            <div style="font:800 28px 'Archivo',sans-serif;color:#002eff">2009</div>
+            <div style="font-size:13px;color:#4a5180;margin-top:2px">dernière refonte du règlement</div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:18px;margin-top:12px">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:13px;font-weight:600">
+            <span style="color:#002eff">En espèces&nbsp;: {{ totalETxt }}</span>
+            <span style="color:#9a6a10">En nature (locaux, personnel, logistique)&nbsp;: {{ totalNTxt }}</span>
+          </div>
+          <div style="display:flex;height:12px;border-radius:99px;overflow:hidden;margin-top:10px;background:#e8ebf7">
+            <div style="{{ homeBarE }}"></div>
+            <div style="{{ homeBarN }}"></div>
+          </div>
+        </div>
+      </section>
+      <section style="max-width:1040px;margin:0 auto;padding:20px 16px 48px">
+        <div style="background:#fff;border:1px solid #dde2f2;border-left:4px solid #002eff;border-radius:12px;padding:20px;display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+          <div style="flex:1;min-width:240px">
+            <div style="font:700 16px 'Archivo',sans-serif;color:#000F9F">Un seul règlement au lieu de 14</div>
+            <p style="font-size:14px;color:#4a5180;line-height:1.5;margin:6px 0 0">Le groupe MR-CI propose d'unifier les 14 règlements en un texte unique&nbsp;: plus lisible pour les associations, plus contrôlable pour les élus.</p>
+          </div>
+          <button onClick="{{ goProp }}" style="background:#002eff;color:#fff;border:none;border-radius:9px;padding:11px 18px;font-weight:700;font-size:14px;cursor:pointer" style-hover="background:#000F9F">Lire la proposition</button>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSim }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Simulateur" style="max-width:760px;margin:0 auto;padding:28px 16px 56px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <h1 style="font:800 26px 'Archivo',sans-serif;margin:0;color:#000F9F">Tester mes droits</h1>
+        <div style="font-size:13px;font-weight:600;color:#6a71a0">Étape {{ simStep }} / 3</div>
+      </div>
+      <div style="display:flex;gap:5px;margin:12px 0 24px">
+        <div style="{{ stepBar1 }}"></div><div style="{{ stepBar2 }}"></div><div style="{{ stepBar3 }}"></div>
+      </div>
+
+      <sc-if value="{{ simIsStep1 }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:16px;margin-bottom:18px">
+          <label for="asso-name" style="font-weight:700;font-size:14.5px;display:block;margin-bottom:6px">Le nom de votre association</label>
+          <input id="asso-name" type="text" placeholder="ex. Royale Harmonie de Ressaix" value="{{ assoName }}" onChange="{{ onAssoName }}" style="{{ assoNameStyle }}">
+          <sc-if value="{{ nameError }}" hint-placeholder-val="{{ false }}"><div style="color:#c22a1e;font-size:13px;font-weight:600;margin-top:6px">Indiquez d'abord le nom de votre association.</div></sc-if>
+        </div>
+        <p style="font-size:15px;color:#4a5180;margin:0 0 14px;line-height:1.5">Puis choisissez la catégorie dont votre association relève&nbsp;— chacune a son propre règlement.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">
+          <sc-for list="{{ simCats }}" as="c" hint-placeholder-count="14">
+            <button onClick="{{ c.pick }}" style="text-align:left;background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:5px" style-hover="border-color:#002eff;box-shadow:0 2px 10px rgba(0,46,255,.10)">
+              <span style="font-size:20px">{{ c.icon }}</span>
+              <span style="font:700 14.5px 'Archivo',sans-serif;color:#0d1130;line-height:1.25">{{ c.label }}</span>
+              <span style="font-size:12.5px;color:#4a5180;line-height:1.4">{{ c.pour }}</span>
+              <span style="font-size:12px;font-weight:700;color:#002eff;margin-top:2px">{{ c.teaser }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ simIsStep2 }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #dde2f2;border-radius:14px;padding:20px">
+          <div style="display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid #e8ebf7">
+            <span style="font-size:22px">{{ simCatIcon }}</span>
+            <div>
+              <div style="font:700 16px 'Archivo',sans-serif;color:#000F9F">{{ simCatLabel }}</div>
+              <div style="font-size:12px;color:#6a71a0">{{ assoName }} · {{ simCatRef }}</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:20px;padding-top:18px">
+            <sc-for list="{{ simQuestions }}" as="q" hint-placeholder-count="3">
+              <div>
+                <div style="font-weight:600;font-size:14.5px;line-height:1.45;margin-bottom:3px">{{ q.label }}</div>
+                <sc-if value="{{ q.hasHint }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#6a71a0;margin-bottom:6px">{{ q.hint }}</div></sc-if>
+                <sc-if value="{{ q.isBool }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:8px;margin-top:8px">
+                    <button onClick="{{ q.yes }}" style="{{ q.yesStyle }}">Oui</button>
+                    <button onClick="{{ q.no }}" style="{{ q.noStyle }}">Non</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ q.isNumber }}" hint-placeholder-val="{{ false }}">
+                  <input type="number" min="0" value="{{ q.value }}" onChange="{{ q.onChange }}" style="margin-top:8px;width:130px;border:1px solid #c6cde8;border-radius:8px;padding:10px 12px;font-size:16px">
+                </sc-if>
+                <sc-if value="{{ q.isEnum }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+                    <sc-for list="{{ q.options }}" as="o" hint-placeholder-count="2">
+                      <button onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ q.isListe }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+                    <sc-for list="{{ q.camps }}" as="cp" hint-placeholder-count="1">
+                      <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;background:#f6f7fc;border:1px solid #e3e7f5;border-radius:10px;padding:10px 12px">
+                        <div><div style="font-size:11.5px;color:#6a71a0;margin-bottom:3px">Durée (jours)</div><input type="number" min="0" value="{{ cp.duree }}" onChange="{{ cp.onDuree }}" style="width:90px;border:1px solid #c6cde8;border-radius:8px;padding:8px 10px;font-size:15px"></div>
+                        <div><div style="font-size:11.5px;color:#6a71a0;margin-bottom:3px">Participants 6–18 ans</div><input type="number" min="0" value="{{ cp.parts }}" onChange="{{ cp.onParts }}" style="width:110px;border:1px solid #c6cde8;border-radius:8px;padding:8px 10px;font-size:15px"></div>
+                        <button onClick="{{ cp.remove }}" style="background:none;border:none;color:#6a71a0;font-size:13px;cursor:pointer;padding:8px 4px;text-decoration:underline">Retirer</button>
+                      </div>
+                    </sc-for>
+                    <button onClick="{{ q.addCamp }}" style="align-self:start;background:#eef1fc;color:#002eff;border:1px dashed #aab6e8;border-radius:9px;padding:9px 14px;font-weight:600;font-size:13.5px;cursor:pointer">+ Ajouter un camp</button>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid #e8ebf7;flex-wrap:wrap">
+            <button onClick="{{ simBack }}" style="background:none;border:1px solid #c6cde8;color:#4a5180;border-radius:9px;padding:12px 18px;font-weight:600;font-size:14px;cursor:pointer">← Catégorie</button>
+            <button onClick="{{ simToResult }}" style="background:#002eff;color:#fff;border:none;border-radius:9px;padding:12px 22px;font-weight:700;font-size:15px;cursor:pointer;flex:1;min-width:180px" style-hover="background:#000F9F">Voir mon estimation →</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ simIsStep3 }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #dde2f2;border-radius:14px;overflow:hidden">
+          <div style="background:#000F9F;color:#fff;padding:22px 20px">
+            <div style="font-size:12.5px;color:#aab6ff;font-weight:600">{{ assoName }} · {{ simCatLabel }}</div>
+            <sc-if value="{{ resHasTotal }}" hint-placeholder-val="{{ true }}">
+              <div style="font:800 40px 'Archivo',sans-serif;margin-top:6px">{{ resTotalTxt }}</div>
+              <div style="font-size:13.5px;color:#ccd4ff">estimation annuelle en espèces, hors aides en nature</div>
+            </sc-if>
+            <sc-if value="{{ resNoTotal }}" hint-placeholder-val="{{ false }}">
+              <div style="font:800 24px 'Archivo',sans-serif;margin-top:6px;line-height:1.25">{{ resNoTotalTitle }}</div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ resHasLines }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:6px 20px 0">
+              <div style="font:700 13px 'Archivo',sans-serif;color:#6a71a0;letter-spacing:.05em;padding:14px 0 4px">DÉTAIL DU CALCUL</div>
+              <sc-for list="{{ resLines }}" as="l" hint-placeholder-count="2">
+                <div style="display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid #eef0f8">
+                  <div style="flex:1">
+                    <div style="font-size:14px;line-height:1.45">{{ l.label }}</div>
+                    <div style="font-size:12px;color:#6a71a0;margin-top:2px">{{ l.article }} <span style="color:#b06000">{{ l.note }}</span></div>
+                  </div>
+                  <div style="{{ l.amountStyle }}">{{ l.amountText }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="padding:14px 20px 20px;display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ resNotes }}" as="n" hint-placeholder-count="1">
+              <div style="background:#f6f7fc;border:1px solid #e3e7f5;border-radius:10px;padding:11px 14px;font-size:13.5px;color:#3a4170;line-height:1.5">{{ n.t }}</div>
+            </sc-for>
+            <button onClick="{{ toggleCg }}" style="text-align:left;background:none;border:1px solid #dde2f2;border-radius:10px;padding:12px 14px;cursor:pointer;font-size:14px;font-weight:700;color:#000F9F">{{ cgToggleLabel }} Conditions générales d'éligibilité et obligations</button>
+            <sc-if value="{{ cgOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px solid #dde2f2;border-radius:10px;padding:14px;font-size:13.5px;line-height:1.55;color:#3a4170">
+                <div style="font-weight:700;color:#000F9F;margin-bottom:6px">Pour être éligible (règlement général, CC 12/10/2009)</div>
+                <sc-for list="{{ cgElig }}" as="e" hint-placeholder-count="3"><div style="display:flex;gap:8px;padding:3px 0"><span style="color:#002eff">•</span><span>{{ e.t }} <span style="color:#8a90b8">({{ e.a }})</span></span></div></sc-for>
+                <div style="font-weight:700;color:#000F9F;margin:12px 0 6px">Vos obligations si le subside est accordé</div>
+                <sc-for list="{{ cgObl }}" as="o" hint-placeholder-count="3"><div style="display:flex;gap:8px;padding:3px 0"><span style="color:#002eff">•</span><span>{{ o.t }} <span style="color:#8a90b8">({{ o.a }})</span></span></div></sc-for>
+              </div>
+            </sc-if>
+            <div style="background:#fff8ec;border:1px solid #f0dcae;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;color:#7a5a10"><strong>Avertissement.</strong> {{ avertissement }}</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button onClick="{{ goCompare }}" style="flex:1;min-width:200px;background:#fff;color:#002eff;border:2px solid #002eff;border-radius:9px;padding:12px 16px;font-weight:700;font-size:14.5px;cursor:pointer" style-hover="background:#eef1fc">Comparer avec ma catégorie</button>
+              <button onClick="{{ goContactFromSim }}" style="flex:1;min-width:200px;background:#002eff;color:#fff;border:none;border-radius:9px;padding:12px 16px;font-weight:700;font-size:14.5px;cursor:pointer" style-hover="background:#000F9F">Nous contacter</button>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button onClick="{{ simRestartQuestions }}" style="flex:1;background:none;border:1px solid #c6cde8;color:#4a5180;border-radius:9px;padding:11px;font-weight:600;font-size:13.5px;cursor:pointer">← Modifier mes réponses</button>
+              <button onClick="{{ simRestart }}" style="flex:1;background:none;border:1px solid #c6cde8;color:#4a5180;border-radius:9px;padding:11px;font-weight:600;font-size:13.5px;cursor:pointer">Autre catégorie</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isExplore }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Qui reçoit quoi" style="max-width:860px;margin:0 auto;padding:28px 16px 56px">
+      <h1 style="font:800 26px 'Archivo',sans-serif;margin:0;color:#000F9F">Qui reçoit quoi&nbsp;?</h1>
+      <p style="font-size:14.5px;color:#4a5180;line-height:1.5;margin:8px 0 18px">Les {{ nAssos }} associations soutenues par la Ville&nbsp;: subside en espèces et aides en nature (locaux, personnel, logistique) valorisées. Touchez une ligne pour le détail.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+        <input type="search" placeholder="Rechercher une association…" value="{{ query }}" onChange="{{ onQuery }}" style="flex:2;min-width:200px;border:1px solid #c6cde8;border-radius:10px;padding:12px 14px;font-size:15px;background:#fff">
+        <select value="{{ catFilter }}" onChange="{{ onCatFilter }}" style="flex:1;min-width:160px;border:1px solid #c6cde8;border-radius:10px;padding:12px;font-size:14px;background:#fff;color:#0d1130">
+          <sc-for list="{{ catOptions }}" as="co" hint-placeholder-count="5"><option value="{{ co.v }}">{{ co.label }}</option></sc-for>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px">
+        <div style="background:#fff;border:1px solid #dde2f2;border-top:3px solid #002eff;border-radius:12px;padding:12px 14px">
+          <div style="font-size:11.5px;font-weight:700;color:#6a71a0;letter-spacing:.04em">EN ESPÈCES</div>
+          <div style="font:800 20px 'Archivo',sans-serif;color:#002eff;margin-top:3px">{{ kpiETxt }}</div>
+        </div>
+        <div style="background:#fff;border:1px solid #dde2f2;border-top:3px solid #f0a32f;border-radius:12px;padding:12px 14px">
+          <div style="font-size:11.5px;font-weight:700;color:#6a71a0;letter-spacing:.04em">EN NATURE</div>
+          <div style="font:800 20px 'Archivo',sans-serif;color:#9a6a10;margin-top:3px">{{ kpiNTxt }}</div>
+        </div>
+        <div style="background:#000F9F;border:1px solid #000F9F;border-radius:12px;padding:12px 14px;color:#fff">
+          <div style="font-size:11.5px;font-weight:700;color:#aab6ff;letter-spacing:.04em">TOTAL · {{ nFiltered }} ASSOC.</div>
+          <div style="font:800 20px 'Archivo',sans-serif;margin-top:3px">{{ kpiTTxt }}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:center;font-size:12.5px;color:#4a5180;margin-bottom:14px;flex-wrap:wrap">
+        <span style="font-weight:700">Trier par</span>
+        <div style="display:flex;gap:0;border:1px solid #c6cde8;border-radius:9px;overflow:hidden">
+          <button onClick="{{ sortByT }}" style="{{ sortTStyle }}">Total</button>
+          <button onClick="{{ sortByE }}" style="{{ sortEStyle }}">Espèces</button>
+          <button onClick="{{ sortByN }}" style="{{ sortNStyle }}">Nature</button>
+        </div>
+        <span style="display:flex;align-items:center;gap:6px;margin-left:auto"><span style="width:12px;height:12px;border-radius:3px;background:#002eff;display:inline-block"></span>Espèces</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;background:#f0a32f;display:inline-block"></span>Nature</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+          <div onClick="{{ r.toggle }}" style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:12px 14px;cursor:pointer" style-hover="border-color:#aab6e8">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline">
+              <div style="font-weight:600;font-size:14.5px;line-height:1.35">{{ r.nom }}</div>
+              <div style="font:700 15px 'Archivo',sans-serif;color:#000F9F;white-space:nowrap">{{ r.tTxt }}</div>
+            </div>
+            <div style="display:flex;height:8px;border-radius:99px;overflow:hidden;background:#eef0f8;margin:8px 0 6px">
+              <div style="{{ r.barE }}"></div><div style="{{ r.barN }}"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#6a71a0;flex-wrap:wrap">
+              <span>{{ r.cat }}</span>
+              <span><span style="color:#002eff;font-weight:600">espèces {{ r.eTxt }}</span> · <span style="color:#9a6a10;font-weight:600">nature {{ r.nTxt }}</span></span>
+            </div>
+            <sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}">
+              <div style="border-top:1px solid #eef0f8;margin-top:10px;padding-top:10px;font-size:13px;color:#3a4170;line-height:1.5">
+                <div>{{ r.note }}</div>
+                <sc-if value="{{ r.showCert }}" hint-placeholder-val="{{ false }}"><div style="margin-top:6px;font-size:12px;color:#6a71a0">Catégorisation&nbsp;: <strong>{{ r.cert }}</strong> (analyse MR-CI sur base du budget communal)</div></sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Contact" style="max-width:640px;margin:0 auto;padding:28px 16px 56px">
+      <h1 style="font:800 26px 'Archivo',sans-serif;margin:0;color:#000F9F">Contacter le groupe MR-CI</h1>
+      <p style="font-size:14.5px;color:#4a5180;line-height:1.5;margin:8px 0 18px">Nous vérifions votre dossier et vous aidons à introduire la demande auprès de la Ville. Réponse sous quelques jours.</p>
+      <div style="background:#fff;border:1px solid #dde2f2;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+          <div><label for="c-nom" style="font-size:13px;font-weight:700;display:block;margin-bottom:4px">Nom <span style="color:#c22a1e">*</span></label><input id="c-nom" type="text" value="{{ cNom }}" onChange="{{ onCNom }}" style="width:100%;border:1px solid #c6cde8;border-radius:8px;padding:11px 12px;font-size:15px"></div>
+          <div><label for="c-prenom" style="font-size:13px;font-weight:700;display:block;margin-bottom:4px">Prénom <span style="color:#c22a1e">*</span></label><input id="c-prenom" type="text" value="{{ cPrenom }}" onChange="{{ onCPrenom }}" style="width:100%;border:1px solid #c6cde8;border-radius:8px;padding:11px 12px;font-size:15px"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+          <div><label for="c-email" style="font-size:13px;font-weight:700;display:block;margin-bottom:4px">Adresse e-mail <span style="color:#c22a1e">*</span></label><input id="c-email" type="email" value="{{ cEmail }}" onChange="{{ onCEmail }}" style="width:100%;border:1px solid #c6cde8;border-radius:8px;padding:11px 12px;font-size:15px"></div>
+          <div><label for="c-tel" style="font-size:13px;font-weight:700;display:block;margin-bottom:4px">Téléphone <span style="color:#8a90b8;font-weight:500">(optionnel)</span></label><input id="c-tel" type="tel" value="{{ cTel }}" onChange="{{ onCTel }}" style="width:100%;border:1px solid #c6cde8;border-radius:8px;padding:11px 12px;font-size:15px"></div>
+        </div>
+        <div>
+          <label for="c-msg" style="font-size:13px;font-weight:700;display:block;margin-bottom:4px">Votre message</label>
+          <textarea id="c-msg" rows="9" value="{{ cMsg }}" onChange="{{ onCMsg }}" style="width:100%;border:1px solid #c6cde8;border-radius:8px;padding:11px 12px;font-size:14px;line-height:1.5;resize:vertical"></textarea>
+          <sc-if value="{{ hasSimContext }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#6a71a0;margin-top:4px">Pré-rempli avec votre simulation — vous pouvez le modifier.</div></sc-if>
+        </div>
+        <sc-if value="{{ cErr }}" hint-placeholder-val="{{ false }}"><div style="color:#c22a1e;font-size:13.5px;font-weight:600">{{ cErrTxt }}</div></sc-if>
+        <button onClick="{{ cSubmit }}" style="background:#002eff;color:#fff;border:none;border-radius:9px;padding:13px 18px;font-weight:700;font-size:15px;cursor:pointer" style-hover="background:#000F9F">Envoyer au groupe MR-CI</button>
+        <div style="font-size:12px;color:#8a90b8;line-height:1.5">L'envoi ouvre votre application e-mail avec le message prêt à partir vers {{ contactEmail }}.</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isProp }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Proposition MR-CI">
+      <section style="background:#000F9F;color:#fff">
+        <div style="max-width:760px;margin:0 auto;padding:44px 16px 38px">
+          <div style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:5px 14px;font-size:12px;font-weight:600;letter-spacing:.06em">PROPOSITION DU GROUPE MR-CI</div>
+          <h1 style="font:800 clamp(26px,5vw,38px) 'Archivo',sans-serif;line-height:1.12;margin:16px 0 10px;text-wrap:pretty">Un règlement unifié des subsides communaux</h1>
+          <p style="font-size:16px;line-height:1.55;color:#ccd4ff;margin:0">Soutenir la vie associative, c'est bien. Le faire avec des règles claires, équitables et à jour, c'est mieux. Voici ce que nous proposons au Conseil communal.</p>
+        </div>
+      </section>
+      <section style="max-width:760px;margin:0 auto;padding:30px 16px 10px">
+        <h2 style="font:800 20px 'Archivo',sans-serif;color:#000F9F;margin:0 0 14px">Le constat</h2>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:16px"><strong style="color:#000F9F">Quatorze règlements juxtaposés.</strong><span style="color:#3a4170;font-size:14.5px;line-height:1.55"> Une association doit d'abord deviner de quel règlement elle relève, puis en décoder les barèmes. Et pour les élus, contrôler qu'un subside octroyé est bien réglementaire demande de croiser 14 textes différents.</span></div>
+          <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:16px"><strong style="color:#000F9F">Un règlement figé depuis 2009.</strong><span style="color:#3a4170;font-size:14.5px;line-height:1.55"> Les barèmes n'ont plus bougé depuis 17 ans, et certains seuils sont encore d'anciennes conversions de francs belges (1.239,47&nbsp;€, 24.789,35&nbsp;€).</span></div>
+          <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:16px"><strong style="color:#000F9F">Des anomalies jamais corrigées.</strong><span style="color:#3a4170;font-size:14.5px;line-height:1.55"> Un club sportif de 201 membres touche un subside de base inférieur à celui d'un club de 15 membres&nbsp;; un camp scout de 14 participants ne donne droit à rien, un camp de 15 à 250&nbsp;€&nbsp;; une partie des subsides est fixée au budget sans aucun critère publié.</span></div>
+        </div>
+      </section>
+      <section style="max-width:760px;margin:0 auto;padding:26px 16px 10px">
+        <h2 style="font:800 20px 'Archivo',sans-serif;color:#000F9F;margin:0 0 14px">Quatre principes pour la refonte</h2>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ propPrincipes }}" as="p" hint-placeholder-count="5">
+            <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:baseline">
+              <span style="font:800 18px 'Archivo',sans-serif;color:#002eff;flex-shrink:0">{{ p.n }}</span>
+              <span style="font-size:14.5px;line-height:1.55;color:#3a4170"><strong style="color:#0d1130">{{ p.t }}</strong> {{ p.d }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      <section style="max-width:760px;margin:0 auto;padding:26px 16px 46px">
+        <h2 style="font:800 20px 'Archivo',sans-serif;color:#000F9F;margin:0 0 14px">Ce qui changerait</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+          <div style="background:#fff;border:1px solid #dde2f2;border-radius:12px;overflow:hidden">
+            <div style="background:#eef0f8;padding:10px 16px;font:700 13px 'Archivo',sans-serif;color:#4a5180;letter-spacing:.04em">AUJOURD'HUI</div>
+            <div style="padding:8px 16px 14px">
+              <sc-for list="{{ propAvant }}" as="x" hint-placeholder-count="5"><div style="display:flex;gap:8px;padding:6px 0;font-size:14px;color:#3a4170;line-height:1.5"><span style="color:#b0b6d6">—</span><span>{{ x.t }}</span></div></sc-for>
+            </div>
+          </div>
+          <div style="background:#fff;border:2px solid #002eff;border-radius:12px;overflow:hidden">
+            <div style="background:#002eff;padding:10px 16px;font:700 13px 'Archivo',sans-serif;color:#fff;letter-spacing:.04em">AVEC LE RÈGLEMENT UNIFIÉ</div>
+            <div style="padding:8px 16px 14px">
+              <sc-for list="{{ propApres }}" as="x" hint-placeholder-count="5"><div style="display:flex;gap:8px;padding:6px 0;font-size:14px;color:#0d1130;line-height:1.5"><span style="color:#002eff">✓</span><span>{{ x.t }}</span></div></sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #dde2f2;border-left:4px solid #002eff;border-radius:12px;padding:18px;margin-top:18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+          <p style="flex:1;min-width:220px;font-size:14px;color:#3a4170;line-height:1.55;margin:0">Responsable d'association, citoyen&nbsp;: votre avis nourrit la proposition avant son dépôt au Conseil communal.</p>
+          <button onClick="{{ goContactFromProp }}" style="background:#002eff;color:#fff;border:none;border-radius:9px;padding:12px 18px;font-weight:700;font-size:14px;cursor:pointer" style-hover="background:#000F9F">Réagir à la proposition</button>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+  </main>
+  <sc-if value="{{ toastVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:16px;right:16px;left:16px;z-index:50;display:flex;justify-content:end;pointer-events:none">
+      <div style="pointer-events:auto;background:#fff;border:1px solid #dde2f2;border-left:4px solid #002eff;border-radius:12px;box-shadow:0 8px 28px rgba(13,17,48,.18);padding:14px 16px;max-width:340px;display:flex;gap:12px;align-items:start;animation:toastIn .4s ease both">
+        <div style="flex:1">
+          <div style="font:700 14px 'Archivo',sans-serif;color:#000F9F;line-height:1.35">Découvrez la proposition du groupe MR-CI pour plus de transparence</div>
+          <button onClick="{{ toastGo }}" style="margin-top:8px;background:#002eff;color:#fff;border:none;border-radius:8px;padding:8px 13px;font-weight:700;font-size:13px;cursor:pointer" style-hover="background:#000F9F">Lire la proposition</button>
+        </div>
+        <button onClick="{{ toastClose }}" aria-label="Fermer" style="background:none;border:none;color:#8a90b8;font-size:18px;line-height:1;cursor:pointer;padding:2px" style-hover="color:#0d1130">×</button>
+      </div>
+    </div>
+  </sc-if>
+  <footer style="background:#0d1130;color:#9aa1c8;font-size:12.5px;line-height:1.6">
+    <div style="max-width:1040px;margin:0 auto;padding:22px 16px;display:flex;flex-direction:column;gap:6px">
+      <div><strong style="color:#fff">Subsides de Binche</strong> — initiative du groupe MR-CI (opposition), Conseil communal de Binche. Ce site n'est pas un site officiel de la Ville de Binche.</div>
+      <div>Sources&nbsp;: règlement général et règlements spécifiques du 12/10/2009, modifications des 20/12/2016 et 19/02/2019&nbsp;; budget communal. Simulation indicative&nbsp;— seule la décision du Conseil communal fait foi.</div>
+      <div>Contact&nbsp;: <a href="#contact" onClick="{{ goContactFooter }}" style="color:#c5cfff">{{ contactEmail }}</a></div>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;contactEmail&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;groupe.mrci.binche@mr.be&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contact&quot;},&quot;afficherCertitude&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Qui reçoit quoi ?&quot;}}">
+class Component extends DCLogic {
+  state = { screen: 'home', simStep: 1, simCat: null, answers: {}, cgOpen: false, assoName: '', nameError: false,
+    query: '', catFilter: 'all', sortKey: 't', expanded: null,
+    cNom: '', cPrenom: '', cEmail: '', cTel: '', cMsg: '', cErr: '', simContext: false,
+    toastReady: false, toastDismissed: false };
+  componentDidMount() {
+    if (!window.SUBS_DATA || !window.SIM) { this._t = setInterval(() => { if (window.SUBS_DATA && window.SIM) { clearInterval(this._t); this.forceUpdate(); } }, 100); }
+    let dismissed = false;
+    try { dismissed = sessionStorage.getItem('mrciToastDismissed') === '1'; } catch (e) {}
+    if (!dismissed) this._toastTimer = setTimeout(() => this.setState({ toastReady: true }), 20000);
+  }
+  componentWillUnmount() { clearTimeout(this._toastTimer); clearInterval(this._t); }
+  dismissToast() { this.setState({ toastDismissed: true }); try { sessionStorage.setItem('mrciToastDismissed', '1'); } catch (e) {} }
+  go(screen) { this.setState({ screen }); window.scrollTo(0, 0); }
+  setAns(id, v) { this.setState(s => ({ answers: Object.assign({}, s.answers, { [id]: v }) })); }
+  renderVals() {
+    const S = window.SIM || { cats: [], cg: { eligibilite: [], obligations: [], avertissement: '' }, eur: n => n + ' €' };
+    const DATA = window.SUBS_DATA || [];
+    const eur = S.eur;
+    const st = this.state;
+    const contactEmail = this.props.contactEmail ?? 'groupe.mrci.binche@mr.be';
+    const showCert = this.props.afficherCertitude ?? true;
+    const CATMAP = { culturelles: 'Associations culturelles locales', sportives: 'Associations sportives locales', jeunesse: 'Organisation de jeunesse', aines: 'Personnes âgées', horticoles: 'Cercles horticoles et petits élevages', photo_cine: 'Photo, ciné et vidéos', handicap: 'Aides aux handicapés', ornithologiques: 'Sociétés ornithologiques', one: 'Sections locales ONE', musicales: 'Sociétés musicales et chorales', patriotiques: 'Sociétés patriotiques', kermesses: 'Organisateurs de kermesses communales', carnavalesques: 'Sociétés carnavalesques', nominatif: 'HORS BARÈME — Subside nominatif' };
+    const navDef = [['home', 'Accueil'], ['sim', 'Tester mes droits'], ['explore', 'Qui reçoit quoi ?'], ['prop', 'Proposition MR-CI']];
+    const navItems = navDef.map(([id, label]) => ({
+      label, onClick: () => this.go(id),
+      style: 'border:none;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;' + (st.screen === id ? 'background:#fff;color:#000F9F' : 'background:rgba(255,255,255,.08);color:#dfe4ff')
+    }));
+    let tE = 0, tN = 0, tT = 0;
+    DATA.forEach(d => { tE += d.e; tN += d.n; tT += d.t; });
+    const kEur = n => (n >= 1000000 ? (n / 1000000).toLocaleString('fr-BE', { maximumFractionDigits: 2 }) + ' M€' : Math.round(n / 1000).toLocaleString('fr-BE') + '.000 €');
+    const pctE = tT ? (tE / tT * 100) : 50;
+    // Simulator
+    const cat = S.cats.find(c => c.id === st.simCat) || null;
+    const simCats = S.cats.map(c => ({
+      icon: c.icon, label: c.label, pour: c.pour, teaser: c.teaser,
+      pick: () => {
+        if (!this.state.assoName.trim()) { this.setState({ nameError: true }); window.scrollTo(0, 0); return; }
+        this.setState({ simCat: c.id, answers: {}, simStep: c.questions.length ? 2 : 3, cgOpen: false }); window.scrollTo(0, 0);
+      }
+    }));
+    const a = st.answers;
+    const pill = on => 'text-align:left;border-radius:9px;padding:11px 14px;font-size:14px;cursor:pointer;line-height:1.4;' + (on ? 'background:#002eff;color:#fff;border:1px solid #002eff;font-weight:700' : 'background:#f6f7fc;color:#0d1130;border:1px solid #c6cde8');
+    const simQuestions = cat ? cat.questions.filter(q => !q.visible || q.visible(a)).map(q => {
+      const base = { label: q.label, hint: q.hint || '', hasHint: !!q.hint, isBool: q.type === 'bool', isNumber: q.type === 'number', isEnum: q.type === 'enum', isListe: q.type === 'liste' };
+      if (q.type === 'bool') { base.yes = () => this.setAns(q.id, true); base.no = () => this.setAns(q.id, false); base.yesStyle = pill(a[q.id] === true) + ';flex:1;text-align:center'; base.noStyle = pill(a[q.id] === false) + ';flex:1;text-align:center'; }
+      if (q.type === 'number') { base.value = a[q.id] ?? ''; base.onChange = e => this.setAns(q.id, e.target.value); }
+      if (q.type === 'enum') base.options = q.options.map(([v, label]) => ({ label, pick: () => this.setAns(q.id, v), style: pill(a[q.id] === v) }));
+      if (q.type === 'liste') {
+        const camps = a[q.id] || [];
+        base.camps = camps.map((c, i) => ({
+          duree: c.duree_jours ?? '', parts: c.participants_6_18 ?? '',
+          onDuree: e => { const n = camps.slice(); n[i] = Object.assign({}, n[i], { duree_jours: e.target.value }); this.setAns(q.id, n); },
+          onParts: e => { const n = camps.slice(); n[i] = Object.assign({}, n[i], { participants_6_18: e.target.value }); this.setAns(q.id, n); },
+          remove: () => this.setAns(q.id, camps.filter((_, j) => j !== i))
+        }));
+        base.addCamp = () => this.setAns(q.id, camps.concat([{ duree_jours: '', participants_6_18: '' }]));
+      }
+      return base;
+    }) : [];
+    // Result
+    let res = { lines: [], notes: [] };
+    if (cat && st.simStep === 3) res = cat.compute(a);
+    const firmLines = res.lines.filter(l => l.amount != null);
+    const total = firmLines.reduce((s, l) => s + l.amount, 0);
+    const resLines = res.lines.map(l => ({
+      label: l.label, article: l.article, note: l.note || '', amountText: l.cond ? '+ ' + l.amountText : l.amountText,
+      amountStyle: 'font:700 15px Archivo,sans-serif;white-space:nowrap;' + (l.cond ? 'color:#b06000;font-size:13px;max-width:130px;white-space:normal;text-align:right' : 'color:#000F9F')
+    }));
+    const hasCond = res.lines.some(l => l.cond);
+    const resNotes = (res.notes || []).map(t => ({ t })).concat(hasCond ? [{ t: 'Les lignes en orange sont des suppléments conditionnels, non inclus dans le total : ils dépendent d\u2019une désignation annuelle.' }] : []);
+    const stepBar = on => 'flex:1;height:4px;border-radius:99px;background:' + (on ? '#002eff' : '#dde2f2');
+    // Explorer
+    const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const cats = {};
+    DATA.forEach(d => { cats[d.cat] = (cats[d.cat] || 0) + 1; });
+    const catOptions = [{ v: 'all', label: 'Toutes les catégories (' + DATA.length + ')' }].concat(Object.keys(cats).sort().map(c => ({ v: c, label: c + ' (' + cats[c] + ')' })));
+    let list = DATA.filter(d => (st.catFilter === 'all' || d.cat === st.catFilter) && (!st.query || norm(d.nom).includes(norm(st.query))));
+    const sk = st.sortKey;
+    list = list.slice().sort((x, y) => y[sk] - x[sk]);
+    const maxT = list.reduce((m, d) => Math.max(m, d.t), 1);
+    let fE = 0, fN = 0, fT = 0;
+    list.forEach(d => { fE += d.e; fN += d.n; fT += d.t; });
+    const rows = list.map(d => ({
+      nom: d.nom, cat: d.cat, note: d.note, cert: d.cert, showCert,
+      eTxt: eur(d.e), nTxt: eur(d.n), tTxt: eur(d.t),
+      barE: 'background:#002eff;width:' + (d.e / maxT * 100) + '%',
+      barN: 'background:#f0a32f;width:' + (d.n / maxT * 100) + '%',
+      open: st.expanded === d.nom,
+      toggle: () => this.setState(s => ({ expanded: s.expanded === d.nom ? null : d.nom }))
+    }));
+    const sortBtn = on => 'border:none;padding:8px 14px;font-size:12.5px;font-weight:700;cursor:pointer;' + (on ? 'background:#002eff;color:#fff' : 'background:#fff;color:#4a5180');
+    // Contact
+    const goContact = (msg, simContext) => { this.setState({ screen: 'contact', cMsg: msg, cErr: '', simContext: !!simContext }); window.scrollTo(0, 0); };
+    const buildSimSummary = () => {
+      let s = 'Bonjour,\n\nNous souhaitons vérifier notre dossier de subside communal.\n\nAssociation : ' + st.assoName + '\nCatégorie : ' + (cat ? cat.label : '') + '\nEstimation obtenue : ' + (firmLines.length ? eur(total) : 'aucun montant (voir simulateur)') + '\n';
+      if (res.lines.length) { s += '\nDétail de la simulation :\n'; res.lines.forEach(l => { s += '- ' + l.label + ' (' + l.article + ') : ' + l.amountText + '\n'; }); }
+      s += '\nPouvez-vous nous aider à introduire la demande auprès de la Ville ?\n';
+      return s;
+    };
+    const cSubmit = () => {
+      const { cNom, cPrenom, cEmail, cTel, cMsg } = this.state;
+      if (!cNom.trim() || !cPrenom.trim() || !cEmail.trim()) { this.setState({ cErr: 'Nom, prénom et adresse e-mail sont obligatoires.' }); return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cEmail.trim())) { this.setState({ cErr: "L'adresse e-mail ne semble pas valide." }); return; }
+      this.setState({ cErr: '' });
+      const body = cMsg + '\n—\n' + cPrenom + ' ' + cNom + '\n' + cEmail + (cTel ? '\n' + cTel : '');
+      const subject = st.assoName && st.simContext ? 'Subsides Binche — dossier ' + st.assoName : 'Subsides de Binche — contact';
+      window.location.href = 'mailto:' + contactEmail + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    };
+    return {
+      navItems, contactEmail,
+      isHome: st.screen === 'home', isSim: st.screen === 'sim', isExplore: st.screen === 'explore', isProp: st.screen === 'prop', isContact: st.screen === 'contact',
+      goHome: () => this.go('home'), goSim: () => this.go('sim'), goExplore: () => this.go('explore'), goProp: () => this.go('prop'),
+      goContactFromSim: () => goContact(buildSimSummary(), true),
+      goContactFromProp: () => goContact('Bonjour,\n\nVoici ma réaction à la proposition de règlement unifié des subsides :\n\n', false),
+      goContactFooter: e => { e.preventDefault(); goContact('Bonjour,\n\n', false); },
+      goCompare: () => { const c = cat ? CATMAP[cat.id] : null; this.setState({ screen: 'explore', catFilter: c && cats[c] ? c : 'all', query: '' }); window.scrollTo(0, 0); },
+      nAssos: DATA.length || 169, totalTxt: kEur(tT), totalETxt: eur(Math.round(tE)), totalNTxt: eur(Math.round(tN)),
+      homeBarE: 'background:#4d6bff;width:' + pctE + '%', homeBarN: 'background:#f0a32f;width:' + (100 - pctE) + '%',
+      assoName: st.assoName, onAssoName: e => this.setState({ assoName: e.target.value, nameError: false }),
+      assoNameStyle: 'width:100%;border-radius:9px;padding:12px 14px;font-size:16px;border:1px solid ' + (st.nameError ? '#c22a1e' : '#c6cde8'),
+      nameError: st.nameError,
+      simStep: st.simStep, simIsStep1: st.simStep === 1, simIsStep2: st.simStep === 2, simIsStep3: st.simStep === 3,
+      stepBar1: stepBar(st.simStep >= 1), stepBar2: stepBar(st.simStep >= 2), stepBar3: stepBar(st.simStep >= 3),
+      simCats, simQuestions, simCatIcon: cat ? cat.icon : '', simCatLabel: cat ? cat.label : '', simCatRef: cat ? cat.ref : '',
+      simBack: () => { this.setState({ simStep: 1, simCat: null, answers: {} }); window.scrollTo(0, 0); },
+      simToResult: () => { this.setState({ simStep: 3, cgOpen: false }); window.scrollTo(0, 0); },
+      simRestartQuestions: () => { this.setState({ simStep: cat && cat.questions.length ? 2 : 1 }); window.scrollTo(0, 0); },
+      simRestart: () => { this.setState({ simStep: 1, simCat: null, answers: {} }); window.scrollTo(0, 0); },
+      resLines, resNotes, resHasLines: resLines.length > 0,
+      resHasTotal: firmLines.length > 0, resNoTotal: firmLines.length === 0,
+      resNoTotalTitle: res.ineligible ? 'Non éligible selon le barème actuel' : (res.nominatif ? 'Montant fixé au budget, sans barème' : 'Estimation impossible avec ces réponses'),
+      resTotalTxt: eur(total),
+      cgOpen: st.cgOpen, toggleCg: () => this.setState(s => ({ cgOpen: !s.cgOpen })), cgToggleLabel: st.cgOpen ? '▾' : '▸',
+      cgElig: S.cg.eligibilite, cgObl: S.cg.obligations, avertissement: S.cg.avertissement,
+      query: st.query, onQuery: e => this.setState({ query: e.target.value }),
+      catFilter: st.catFilter, onCatFilter: e => this.setState({ catFilter: e.target.value }),
+      catOptions, rows, nFiltered: list.length,
+      kpiETxt: eur(Math.round(fE)), kpiNTxt: eur(Math.round(fN)), kpiTTxt: eur(Math.round(fT)),
+      sortByT: () => this.setState({ sortKey: 't' }), sortByE: () => this.setState({ sortKey: 'e' }), sortByN: () => this.setState({ sortKey: 'n' }),
+      sortTStyle: sortBtn(sk === 't'), sortEStyle: sortBtn(sk === 'e') + ';border-left:1px solid #c6cde8;border-right:1px solid #c6cde8', sortNStyle: sortBtn(sk === 'n'),
+      cNom: st.cNom, onCNom: e => this.setState({ cNom: e.target.value }),
+      cPrenom: st.cPrenom, onCPrenom: e => this.setState({ cPrenom: e.target.value }),
+      cEmail: st.cEmail, onCEmail: e => this.setState({ cEmail: e.target.value }),
+      cTel: st.cTel, onCTel: e => this.setState({ cTel: e.target.value }),
+      cMsg: st.cMsg, onCMsg: e => this.setState({ cMsg: e.target.value }),
+      cErr: !!st.cErr, cErrTxt: st.cErr, cSubmit, hasSimContext: st.simContext,
+      toastVisible: st.toastReady && !st.toastDismissed && (st.screen === 'home' || st.screen === 'explore'),
+      toastClose: () => this.dismissToast(),
+      toastGo: () => { this.dismissToast(); this.go('prop'); },
+      propPrincipes: [
+        { n: '1', t: 'Un règlement unique.', d: 'Les 14 règlements de 2009 fusionnés en un seul texte : mêmes définitions, mêmes délais, même formulaire pour toutes les associations.' },
+        { n: '2', t: 'Des critères objectifs et publiés.', d: 'Chaque euro rattaché à un critère vérifiable (membres, activités, jeunesse). Les subsides nominatifs deviennent l\u2019exception motivée, plus la zone grise.' },
+        { n: '3', t: 'Un dossier unique et simplifié.', d: 'Une demande en ligne ou papier, une fois par an, avec les justificatifs proportionnés à la taille de l\u2019association.' },
+        { n: '4', t: 'La transparence par défaut.', d: 'Publication annuelle de la liste complète des bénéficiaires, montants en espèces et en nature compris — comme le fait déjà ce site.' }
+      ],
+      propAvant: [
+        { t: '14 règlements distincts, inchangés depuis 2009' },
+        { t: 'Anomalies de barème (clubs de 200+ membres pénalisés, camps de moins de 15 participants exclus)' },
+        { t: 'Subsides nominatifs décidés au budget, sans critères publiés' },
+        { t: 'Aides en nature valorisées mais peu visibles' },
+        { t: 'Formulaire papier en 3 exemplaires' }
+      ],
+      propApres: [
+        { t: 'Un règlement unique, lisible par tous' },
+        { t: 'Barèmes corrigés et progressifs' },
+        { t: 'Critères publiés pour chaque type de soutien' },
+        { t: 'Espèces et nature publiés chaque année, association par association' },
+        { t: 'Dossier unique, en ligne ou papier' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

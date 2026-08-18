@@ -9,3 +9,6 @@ Thumbs.db
 
 # Node (si ajouté plus tard)
 node_modules/
+
+# Archives
+*.zip
