@@ -7,10 +7,10 @@
   /* ------------------------------------------------------------------ */
   /* Configuration                                                        */
   /* ------------------------------------------------------------------ */
-  var CONTACT_EMAIL = 'mr-ci.binche@gmail.com';
+  var CONTACT_EMAIL = 'je.gigounon@gmail.com'; // TEMPORAIRE (tests) — remettre mr-ci.binche@gmail.com avec sa propre clé Web3Forms
   // Envoi direct du formulaire de contact via Web3Forms (https://web3forms.com).
   // Coller ici l'access key reçue par e-mail à CONTACT_EMAIL. Si vide, repli sur mailto:.
-  var FORM_ACCESS_KEY = '';
+  var FORM_ACCESS_KEY = 'e881b05d-ebab-4fd7-baa1-be0c6e44c8f7';
   var FORM_ENDPOINT = 'https://api.web3forms.com/submit';
   var SHOW_CERT = false; // afficher le niveau de certitude de la catégorisation
 
